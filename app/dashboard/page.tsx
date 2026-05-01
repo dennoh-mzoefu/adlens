@@ -1,3 +1,4 @@
+import type { ResearchWithCounts } from '@/types'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -83,8 +84,8 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {researchList.map((r) => (
-                <ResearchCard key={r.id} research={r as any} />
+              {researchList.map((r: ResearchWithCounts) => (
+                <ResearchCard key={r.id} research={r} />
               ))}
             </div>
           )}
