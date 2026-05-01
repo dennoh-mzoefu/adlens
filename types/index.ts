@@ -2,9 +2,20 @@ import type { Ad, Analysis, Research, ResearchType, Platform, AdSource, Analysis
 
 export type { Ad, Analysis, Research, ResearchType, Platform, AdSource, AnalysisType }
 
-export interface ResearchWithCounts extends Research {
+export interface ResearchWithCounts {
+  id: string
+  userId: string
+  title: string
+  type: ResearchType
+  description: string | null
+  tags: string[]
+  notes: string | null
+  status: string
+  createdAt: Date
+  updatedAt: Date
   _count: { ads: number; analyses: number }
   ads: Array<{ platform: Platform }>
+  analyses?: Analysis[]
 }
 
 export interface AdWithResearch extends Ad {
