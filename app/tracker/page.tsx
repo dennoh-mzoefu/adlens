@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma'
 import { AdCard } from '@/components/ads/AdCard'
 import { AdTrendChart } from '@/components/charts/AdTrendChart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { Ad } from '@/types'
+
+type AdWithResearch = Ad & { research: { title: string } }
 
 export default async function TrackerPage() {
   const session = await getServerSession(authOptions)
@@ -13,7 +16,7 @@ export default async function TrackerPage() {
     orderBy: { importedAt: 'desc' },
     take: 100,
     include: { research: { select: { title: true } } },
-  })
+  }) as AdWithResearch[]
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -24,7 +27,7 @@ export default async function TrackerPage() {
           <CardTitle className="text-sm text-muted-foreground">Ads Imported — Last 30 Days</CardTitle>
         </CardHeader>
         <CardContent>
-          <AdTrendChart ads={ads as any} />
+          <AdTrendChart ads={ads} />
         </CardContent>
       </Card>
 
@@ -36,12 +39,12 @@ export default async function TrackerPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {ads.map((ad) => (
+            {ads.map((ad: AdWithResearch) => (
               <div key={ad.id}>
                 <p className="text-xs text-muted-foreground mb-1.5">
-                  Research: {(ad as any).research.title}
+                  Research: {ad.research.title}
                 </p>
-                <AdCard ad={ad as any} />
+                <AdCard ad={ad} />
               </div>
             ))}
           </div>
