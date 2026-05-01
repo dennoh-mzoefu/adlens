@@ -22,9 +22,19 @@ import {
 import { Search, Plus, Loader2, ChevronLeft, Archive, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
-import type { Ad, Analysis, Research } from '@/types'
+import type { Ad, Analysis, ResearchType } from '@/types'
 
-interface ResearchFull extends Research {
+interface ResearchFull {
+  id: string
+  userId: string
+  title: string
+  type: ResearchType
+  description: string | null
+  tags: string[]
+  notes: string | null
+  status: string
+  createdAt: Date
+  updatedAt: Date
   ads: Ad[]
   analyses: Analysis[]
   _count: { ads: number; analyses: number }
