@@ -32,10 +32,10 @@ export default async function DashboardPage() {
     where: { userId: session!.user.id },
   })
   const totalAds = allAds.length
-  const metaAds = allAds.filter((a) => a.source === 'api').length
-  const manualAds = allAds.filter((a) => a.source === 'manual').length
+  const metaAds = allAds.filter((a: { source: string }) => a.source === 'api').length
+  const manualAds = allAds.filter((a: { source: string }) => a.source === 'manual').length
 
-  const adsForChart = allAds.map((a) => ({ platform: a.platform })) as any
+  const adsForChart = allAds.map((a: { platform: string }) => ({ platform: a.platform })) as any
 
   return (
     <div className="space-y-6 max-w-6xl">
