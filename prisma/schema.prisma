@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth (NextAuth required tables) ─────────────────────────────────────────
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  research      Research[]
+  createdAt     DateTime   @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Core App Models ──────────────────────────────────────────────────────────
+
+model Research {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  type        ResearchType
+  description String?
+  tags        String[]
+  notes       String?
+  status      String       @default("active")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ads         Ad[]
+  analyses    Analysis[]
+}
+
+enum ResearchType {
+  product
+  service
+  brand
+  person
+  trend
+  event
+  other
+}
+
+model Ad {
+  id         String   @id @default(cuid())
+  researchId String
+  research   Research @relation(fields: [researchId], references: [id], onDelete: Cascade)
+
+  platform Platform
+
+  advertiser   String
+  adTitle      String?
+  adText       String?
+  ctaText      String?
+  mediaUrl     String?
+  mediaType    String?
+  targetUrl    String?
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  region       String?
+  spend        String?
+  impressions  String?
+  audienceSize String?
+
+  externalId         String?
+  snapshotUrl        String?
+  publisherPlatforms String[]
+
+  source     AdSource
+  importedAt DateTime @default(now())
+
+  rawData Json?
+
+  @@unique([externalId, researchId])
+}
+
+enum Platform {
+  meta
+  tiktok
+  google
+  youtube
+  twitter
+  linkedin
+  other
+}
+
+enum AdSource {
+  api
+  manual
+}
+
+model Analysis {
+  id         String       @id @default(cuid())
+  researchId String
+  research   Research     @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  type       AnalysisType
+  content    String
+  metadata   Json?
+  createdAt  DateTime     @default(now())
+}
+
+enum AnalysisType {
+  summary
+  comparison
+  sentiment
+  trend
+  competitive
+  custom
+}
